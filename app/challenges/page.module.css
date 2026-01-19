@@ -1,0 +1,269 @@
+/* Challenges Page Styles */
+
+.container {
+    max-width: var(--container-max);
+    margin: 0 auto;
+    padding: var(--space-xl) var(--space-lg);
+}
+
+/* Header */
+.header {
+    margin-bottom: var(--space-xl);
+}
+
+.title {
+    font-size: var(--text-3xl);
+    font-weight: var(--font-bold);
+    color: var(--text-primary);
+    margin-bottom: var(--space-xs);
+}
+
+.subtitle {
+    color: var(--text-secondary);
+    font-size: var(--text-base);
+}
+
+/* Stats Row */
+.statsRow {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-md);
+    margin-bottom: var(--space-xl);
+}
+
+.statCard {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-lg);
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-xl);
+}
+
+.statIcon {
+    font-size: 1.75rem;
+}
+
+.statInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.statValue {
+    font-size: var(--text-xl);
+    font-weight: var(--font-bold);
+    color: var(--text-primary);
+}
+
+.statLabel {
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+}
+
+/* Tabs */
+.tabs {
+    display: flex;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-lg);
+    padding: var(--space-xs);
+    background: var(--bg-muted);
+    border-radius: var(--radius-lg);
+}
+
+.tab {
+    flex: 1;
+    padding: var(--space-md);
+    background: none;
+    border: none;
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-weight: var(--font-medium);
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.tab:hover {
+    color: var(--text-primary);
+}
+
+.tab.active {
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Challenges List */
+.challengesList {
+    display: grid;
+    gap: var(--space-md);
+    margin-bottom: var(--space-xl);
+}
+
+.challengeCard {
+    padding: var(--space-lg);
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-xl);
+    transition: all var(--transition-base);
+}
+
+.challengeCard:hover {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 20px var(--accent-primary-glow);
+}
+
+.challengeHeader {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-md);
+}
+
+.difficultyBadge {
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-full);
+    font-size: var(--text-xs);
+    font-weight: var(--font-bold);
+    text-transform: uppercase;
+    color: var(--text-inverse);
+}
+
+.typeBadge {
+    padding: var(--space-xs) var(--space-sm);
+    background: var(--bg-muted);
+    border-radius: var(--radius-full);
+    font-size: var(--text-xs);
+    font-weight: var(--font-medium);
+    text-transform: capitalize;
+    color: var(--text-secondary);
+}
+
+.timeRemaining {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    margin-left: auto;
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+}
+
+.challengeTitle {
+    font-size: var(--text-lg);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    margin-bottom: var(--space-xs);
+}
+
+.challengeDescription {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    margin-bottom: var(--space-lg);
+}
+
+.challengeFooter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-lg);
+}
+
+.progressSection {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.progressBar {
+    flex: 1;
+    height: 8px;
+    background: var(--bg-muted);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+}
+
+.progressFill {
+    height: 100%;
+    border-radius: var(--radius-full);
+    transition: width var(--transition-slow);
+}
+
+.progressText {
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.rewardBadge {
+    padding: var(--space-sm) var(--space-md);
+    background: var(--accent-primary-glow);
+    border: 1px solid var(--accent-primary);
+    border-radius: var(--radius-lg);
+    font-size: var(--text-sm);
+    font-weight: var(--font-bold);
+    color: var(--accent-primary);
+}
+
+/* AI Banner */
+.aiBanner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-lg);
+    padding: var(--space-xl);
+    background: linear-gradient(135deg, var(--glass-bg), rgba(168, 85, 247, 0.1));
+    border: 1px solid var(--accent-tertiary);
+    border-radius: var(--radius-xl);
+}
+
+.aiBannerContent {
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg);
+}
+
+.aiIcon {
+    font-size: 2.5rem;
+}
+
+.aiTitle {
+    font-size: var(--text-lg);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    margin-bottom: var(--space-xs);
+}
+
+.aiDescription {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+}
+
+.comingSoon {
+    padding: var(--space-sm) var(--space-md);
+    background: var(--accent-tertiary);
+    border-radius: var(--radius-full);
+    font-size: var(--text-xs);
+    font-weight: var(--font-bold);
+    color: white;
+    white-space: nowrap;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .statsRow {
+        grid-template-columns: 1fr;
+    }
+
+    .aiBanner {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .aiBannerContent {
+        flex-direction: column;
+    }
+}

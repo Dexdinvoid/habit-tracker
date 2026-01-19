@@ -1,0 +1,84 @@
+/* League Badge Styles */
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-xs);
+    background: var(--bg-muted);
+    border: 2px solid var(--league-color);
+    border-radius: var(--radius-full);
+    box-shadow: 0 0 15px var(--league-glow);
+    cursor: default;
+}
+
+/* Sizes */
+.sm {
+    padding: var(--space-xs) var(--space-sm);
+}
+
+.sm .icon {
+    font-size: 1.25rem;
+}
+
+.sm .rank {
+    font-size: var(--text-xs);
+}
+
+.md {
+    padding: var(--space-sm) var(--space-md);
+}
+
+.md .icon {
+    font-size: 1.5rem;
+}
+
+.md .rank {
+    font-size: var(--text-sm);
+}
+
+.lg {
+    padding: var(--space-md) var(--space-lg);
+}
+
+.lg .icon {
+    font-size: 2rem;
+}
+
+.lg .rank {
+    font-size: var(--text-base);
+}
+
+.icon {
+    line-height: 1;
+}
+
+.rank {
+    font-weight: var(--font-bold);
+    color: var(--league-color);
+}
+
+.label {
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    text-transform: capitalize;
+}
+
+/* Radiant Special Effect */
+.radiant {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 42, 109, 0.2), rgba(5, 217, 232, 0.2));
+    border-image: linear-gradient(135deg, #ffd700, #ff2a6d, #05d9e8) 1;
+    animation: radiantGlow 2s ease-in-out infinite;
+}
+
+@keyframes radiantGlow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.5), 0 0 40px rgba(255, 42, 109, 0.3);
+    }
+
+    50% {
+        box-shadow: 0 0 30px rgba(5, 217, 232, 0.5), 0 0 60px rgba(255, 215, 0, 0.3);
+    }
+}

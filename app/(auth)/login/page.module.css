@@ -1,0 +1,304 @@
+/* Login Page Styles */
+
+.container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-lg);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Animated Background */
+.background {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    z-index: -1;
+}
+
+.gradientOrb1,
+.gradientOrb2,
+.gradientOrb3 {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.4;
+    animation: float 8s ease-in-out infinite;
+}
+
+.gradientOrb1 {
+    width: 500px;
+    height: 500px;
+    background: var(--accent-primary);
+    top: -200px;
+    right: -100px;
+    animation-delay: 0s;
+}
+
+.gradientOrb2 {
+    width: 400px;
+    height: 400px;
+    background: var(--accent-secondary);
+    bottom: -150px;
+    left: -100px;
+    animation-delay: -2s;
+}
+
+.gradientOrb3 {
+    width: 300px;
+    height: 300px;
+    background: var(--accent-tertiary);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation-delay: -4s;
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translate(0, 0) scale(1);
+    }
+
+    33% {
+        transform: translate(30px, -30px) scale(1.05);
+    }
+
+    66% {
+        transform: translate(-20px, 20px) scale(0.95);
+    }
+}
+
+/* Card */
+.card {
+    width: 100%;
+    max-width: 420px;
+    padding: var(--space-2xl);
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--glass-shadow);
+}
+
+/* Header */
+.header {
+    text-align: center;
+    margin-bottom: var(--space-xl);
+}
+
+.logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    font-size: 2rem;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: var(--space-md);
+}
+
+.title {
+    font-size: var(--text-3xl);
+    font-weight: var(--font-extrabold);
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: var(--space-sm);
+}
+
+.subtitle {
+    color: var(--text-secondary);
+    font-size: var(--text-base);
+}
+
+/* OAuth Buttons */
+.oauthButtons {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-lg);
+}
+
+.oauthButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    width: 100%;
+    padding: var(--space-md);
+    background: var(--bg-surface);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    color: var(--text-primary);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.oauthButton:hover:not(:disabled) {
+    background: var(--bg-muted);
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 20px var(--accent-primary-glow);
+}
+
+.oauthButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Divider */
+.divider {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--glass-border);
+}
+
+.divider span {
+    color: var(--text-muted);
+    font-size: var(--text-sm);
+}
+
+/* Form */
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.inputGroup {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.label {
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    color: var(--text-secondary);
+}
+
+.input {
+    width: 100%;
+    padding: var(--space-md);
+    background: var(--bg-surface);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    color: var(--text-primary);
+    font-size: var(--text-base);
+    transition: all var(--transition-base);
+    outline: none;
+}
+
+.input:focus {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px var(--accent-primary-glow);
+}
+
+.input::placeholder {
+    color: var(--text-muted);
+}
+
+/* Submit Button */
+.submitButton {
+    width: 100%;
+    padding: var(--space-md);
+    margin-top: var(--space-sm);
+    background: var(--gradient-primary);
+    border: none;
+    border-radius: var(--radius-lg);
+    color: white;
+    font-size: var(--text-base);
+    font-weight: var(--font-semibold);
+    cursor: pointer;
+    transition: all var(--transition-base);
+    box-shadow: 0 4px 15px var(--accent-primary-glow);
+}
+
+.submitButton:hover:not(:disabled) {
+    box-shadow: 0 6px 25px var(--accent-primary-glow);
+}
+
+.submitButton:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.loadingSpinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid transparent;
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Toggle */
+.toggle {
+    text-align: center;
+    margin-top: var(--space-lg);
+    color: var(--text-secondary);
+    font-size: var(--text-sm);
+}
+
+.toggleButton {
+    background: none;
+    border: none;
+    color: var(--accent-primary);
+    font-weight: var(--font-semibold);
+    cursor: pointer;
+    margin-left: var(--space-xs);
+    transition: color var(--transition-base);
+}
+
+.toggleButton:hover {
+    color: var(--accent-primary-hover);
+    text-decoration: underline;
+}
+
+/* Demo Notice */
+.demo {
+    text-align: center;
+    margin-top: var(--space-md);
+    padding: var(--space-sm) var(--space-md);
+    background: var(--bg-muted);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-size: var(--text-xs);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .card {
+        padding: var(--space-lg);
+    }
+
+    .title {
+        font-size: var(--text-2xl);
+    }
+}
