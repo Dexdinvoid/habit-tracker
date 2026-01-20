@@ -181,7 +181,7 @@ function LoginForm() {
             <div className={styles.footer}>
                 <p className={styles.footerText}>
                     Don't have an account?{' '}
-                    <Link href="/signup" className={styles.link}>
+                    <Link href={searchParams.get('ref') ? `/signup?ref=${searchParams.get('ref')}` : '/signup'} className={styles.link}>
                         Sign Up
                     </Link>
                 </p>
