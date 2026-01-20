@@ -46,13 +46,15 @@ const ScanIcon = () => (
 
 export default function FriendsPage() {
     const router = useRouter();
-    const { user, friends, isLoading } = useApp();
+    const { user, friends, isLoading, searchUsers } = useApp();
     const [searchQuery, setSearchQuery] = useState('');
     const [activeTab, setActiveTab] = useState<'friends' | 'leaderboard'>('friends');
     const [selectedFriend, setSelectedFriend] = useState<Friend | null>(null);
     const [toastMessage, setToastMessage] = useState<string | null>(null);
     const [showQR, setShowQR] = useState(false);
     const [showScanner, setShowScanner] = useState(false);
+    const [searchResults, setSearchResults] = useState<Friend[]>([]);
+    const [isSearching, setIsSearching] = useState(false);
 
     // Get origin safely - prioritize env var, then window.location
     const getOrigin = () => {
@@ -72,6 +74,26 @@ export default function FriendsPage() {
             router.push('/login');
         }
     }, [user, isLoading, router]);
+
+    // Search users when query changes
+    React.useEffect(() => {
+        const performSearch = async () => {
+            if (searchQuery.trim().length < 2) {
+                setSearchResults([]);
+                setIsSearching(false);
+                return;
+            }
+
+            setIsSearching(true);
+            const results = await searchUsers(searchQuery);
+            // Filter out current user from results
+            setSearchResults(results.filter(r => r.id !== user?.id));
+            setIsSearching(false);
+        };
+
+        const debounce = setTimeout(performSearch, 300);
+        return () => clearTimeout(debounce);
+    }, [searchQuery, user, searchUsers]);
 
     const showToast = (message: string) => {
         setToastMessage(message);
@@ -151,10 +173,9 @@ export default function FriendsPage() {
 
     if (!user) return null;
 
-    const filteredFriends = friends.filter(friend =>
-        friend.displayName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        friend.username.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    // Use search results if searching, otherwise show existing friends
+    const displayedUsers = searchQuery.trim().length >= 2 ? searchResults : friends;
+    const filteredFriends = displayedUsers;
 
     const leaderboard = [...friends].sort((a, b) => b.totalPoints - a.totalPoints);
 
