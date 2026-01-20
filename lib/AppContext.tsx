@@ -50,6 +50,9 @@ interface AppContextType extends AppState {
     unfollowUser: (userId: string) => Promise<void>;
     fetchFollowers: (userId: string) => Promise<string[]>;
     fetchFollowing: (userId: string) => Promise<string[]>;
+
+    // User Search
+    searchUsers: (query: string) => Promise<Friend[]>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -765,6 +768,34 @@ export function AppProvider({ children }: AppProviderProps) {
         return data.map((f: any) => f.following_id);
     };
 
+    const searchUsers = async (query: string): Promise<Friend[]> => {
+        if (!query.trim()) return [];
+
+        const { data, error } = await supabase
+            .from('profiles')
+            .select('id, username, display_name, avatar_url, points, current_streak')
+            .or(`username.ilike.%${query}%,display_name.ilike.%${query}%`)
+            .limit(20);
+
+        if (error || !data) return [];
+
+        return data.map((profile: any) => {
+            const points = profile.points || 0;
+            const { tier } = calculateLeague(points);
+
+            return {
+                id: profile.id,
+                username: profile.username,
+                displayName: profile.display_name || profile.username,
+                avatar: profile.avatar_url,
+                totalPoints: points,
+                currentStreak: profile.current_streak || 0,
+                league: tier,
+                leagueRank: 1, // Default rank
+            };
+        });
+    };
+
     return (
         <AppContext.Provider value={{
             ...state,
@@ -787,6 +818,7 @@ export function AppProvider({ children }: AppProviderProps) {
             unfollowUser,
             fetchFollowers,
             fetchFollowing,
+            searchUsers,
         }}>
             {children}
         </AppContext.Provider>
