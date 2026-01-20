@@ -234,3 +234,45 @@
         transform: rotate(360deg);
     }
 }
+
+/* Caption Section */
+.captionSection {
+    margin-top: var(--space-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.captionLabel {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    font-weight: var(--font-medium);
+}
+
+.captionInput {
+    width: 100%;
+    padding: var(--space-md);
+    background: var(--bg-surface);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    color: var(--text-primary);
+    font-size: var(--text-sm);
+    font-family: inherit;
+    resize: none;
+    outline: none;
+    transition: border-color var(--transition-base);
+}
+
+.captionInput:focus {
+    border-color: var(--accent-primary);
+}
+
+.captionInput::placeholder {
+    color: var(--text-muted);
+}
+
+.charCount {
+    align-self: flex-end;
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+}

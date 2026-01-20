@@ -44,14 +44,24 @@ function getTimeRemaining(endDate: Date): string {
 
 export default function ChallengesPage() {
     const router = useRouter();
-    const { user, challenges } = useApp();
+    const { user, challenges, isLoading } = useApp();
     const [activeTab, setActiveTab] = useState<ChallengeType | 'all'>('all');
 
     React.useEffect(() => {
-        if (!user) {
+        if (!isLoading && !user) {
             router.push('/login');
         }
-    }, [user, router]);
+    }, [user, isLoading, router]);
+
+    if (isLoading) {
+        return (
+            <MainLayout>
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
+                    <div className={styles.loadingSpinner} />
+                </div>
+            </MainLayout>
+        );
+    }
 
     if (!user) return null;
 

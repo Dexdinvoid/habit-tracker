@@ -7,6 +7,7 @@ import { useApp } from '@/lib/AppContext';
 import { useTheme, THEME_META } from '@/lib/ThemeProvider';
 import MainLayout from '@/components/layout/MainLayout';
 import LeagueBadge from '@/components/gamification/LeagueBadge';
+import TrophyCase from '@/components/gamification/TrophyCase';
 import { ThemeName } from '@/lib/types';
 import styles from './page.module.css';
 
@@ -20,14 +21,39 @@ const LogoutIcon = () => (
 
 export default function ProfilePage() {
     const router = useRouter();
-    const { user, userStats, habits, logout } = useApp();
+    const { user, userStats, habits, feedPosts, logout, isLoading, fetchFollowers, fetchFollowing } = useApp();
     const { theme, setTheme } = useTheme();
 
+    const [followersCount, setFollowersCount] = React.useState(0);
+    const [followingCount, setFollowingCount] = React.useState(0);
+
     React.useEffect(() => {
-        if (!user) {
+        if (!isLoading && !user) {
             router.push('/login');
         }
-    }, [user, router]);
+    }, [user, isLoading, router]);
+
+    React.useEffect(() => {
+        const loadFollowData = async () => {
+            if (user) {
+                const followers = await fetchFollowers(user.id);
+                const following = await fetchFollowing(user.id);
+                setFollowersCount(followers.length);
+                setFollowingCount(following.length);
+            }
+        };
+        loadFollowData();
+    }, [user, fetchFollowers, fetchFollowing]);
+
+    if (isLoading) {
+        return (
+            <MainLayout>
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
+                    <div className={styles.loadingSpinner} />
+                </div>
+            </MainLayout>
+        );
+    }
 
     if (!user || !userStats) return null;
 
@@ -75,12 +101,12 @@ export default function ProfilePage() {
                             <span className={styles.statLabel}>Day Streak</span>
                         </div>
                         <div className={styles.stat}>
-                            <span className={styles.statValue}>{userStats.habitsCompleted}</span>
-                            <span className={styles.statLabel}>Habits Done</span>
+                            <span className={styles.statValue}>{followersCount}</span>
+                            <span className={styles.statLabel}>Followers</span>
                         </div>
                         <div className={styles.stat}>
-                            <span className={styles.statValue}>{habits.length}</span>
-                            <span className={styles.statLabel}>Active Habits</span>
+                            <span className={styles.statValue}>{followingCount}</span>
+                            <span className={styles.statLabel}>Following</span>
                         </div>
                     </div>
                 </motion.div>
@@ -108,6 +134,47 @@ export default function ProfilePage() {
                             </motion.div>
                         ))}
                     </div>
+                </motion.section>
+
+                {/* Trophy Case */}
+                <TrophyCase stats={userStats} />
+
+                {/* My Posts */}
+                <motion.section
+                    className={styles.section}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.15 }}
+                >
+                    <h2 className={styles.sectionTitle}>My Posts</h2>
+                    {feedPosts.filter(post => post.userId === user.id).length === 0 ? (
+                        <div className={styles.emptyPosts}>
+                            <span>📸</span>
+                            <p>No posts yet. Complete habits with proof to see them here!</p>
+                        </div>
+                    ) : (
+                        <div className={styles.postsGrid}>
+                            {feedPosts
+                                .filter(post => post.userId === user.id)
+                                .slice(0, 9)
+                                .map((post) => (
+                                    <motion.div
+                                        key={post.id}
+                                        className={styles.postCard}
+                                        whileHover={{ scale: 1.03 }}
+                                    >
+                                        <img src={post.proofImageUrl} alt={post.habitName} className={styles.postImage} />
+                                        <div className={styles.postOverlay}>
+                                            <span className={styles.postIcon}>{post.habitIcon}</span>
+                                            <span className={styles.postHabit}>{post.habitName}</span>
+                                            {post.caption && (
+                                                <span className={styles.postCaption}>{post.caption}</span>
+                                            )}
+                                        </div>
+                                    </motion.div>
+                                ))}
+                        </div>
+                    )}
                 </motion.section>
 
                 {/* Theme Selector */}

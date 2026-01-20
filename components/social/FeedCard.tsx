@@ -33,15 +33,48 @@ const CommentIcon = () => (
 );
 
 export default function FeedCard({ post }: FeedCardProps) {
-    const { likePost } = useApp();
+    const [comments, setComments] = useState<any[]>([]);
+    const [isLoadingComments, setIsLoadingComments] = useState(false);
     const [showComments, setShowComments] = useState(false);
     const [isLiking, setIsLiking] = useState(false);
+    const [newComment, setNewComment] = useState('');
+    const { user, likePost, addComment, fetchComments } = useApp();
 
     const handleLike = async () => {
         if (isLiking) return;
         setIsLiking(true);
         likePost(post.id);
         setTimeout(() => setIsLiking(false), 300);
+    };
+
+    const toggleComments = async () => {
+        if (!showComments) {
+            setIsLoadingComments(true);
+            try {
+                const fetchedComments = await fetchComments(post.id);
+                setComments(fetchedComments);
+            } catch (error) {
+                console.error('Failed to load comments', error);
+            } finally {
+                setIsLoadingComments(false);
+            }
+        }
+        setShowComments(!showComments);
+    };
+
+    const handleSubmitComment = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!newComment.trim() || !user) return;
+
+        try {
+            await addComment(post.id, newComment);
+            setNewComment('');
+            // Refresh comments to show new one
+            const fetchedComments = await fetchComments(post.id);
+            setComments(fetchedComments);
+        } catch (error) {
+            console.error('Failed to post comment', error);
+        }
     };
 
     return (
@@ -104,12 +137,55 @@ export default function FeedCard({ post }: FeedCardProps) {
 
                 <button
                     className={styles.actionButton}
-                    onClick={() => setShowComments(!showComments)}
+                    onClick={toggleComments}
                 >
                     <CommentIcon />
                     <span>{post.comments}</span>
                 </button>
             </div>
+
+            {/* Comments Section */}
+            {showComments && (
+                <motion.div
+                    className={styles.commentsSection}
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                >
+                    <div className={styles.commentsList}>
+                        {isLoadingComments ? (
+                            <div className={styles.loadingComments}>Loading...</div>
+                        ) : comments.length > 0 ? (
+                            comments.map((comment) => (
+                                <div key={comment.id} className={styles.commentItem}>
+                                    <span className={styles.commentUser}>{comment.user.username}</span>
+                                    <span className={styles.commentText}>{comment.content}</span>
+                                </div>
+                            ))
+                        ) : (
+                            <div className={styles.noComments}>No comments yet. Be the first!</div>
+                        )}
+                    </div>
+
+                    {user && (
+                        <form onSubmit={handleSubmitComment} className={styles.commentForm}>
+                            <input
+                                type="text"
+                                className={styles.commentInput}
+                                placeholder="Write a comment..."
+                                value={newComment}
+                                onChange={(e) => setNewComment(e.target.value)}
+                            />
+                            <button
+                                type="submit"
+                                className={styles.postButton}
+                                disabled={!newComment.trim()}
+                            >
+                                Post
+                            </button>
+                        </form>
+                    )}
+                </motion.div>
+            )}
         </motion.div>
     );
 }

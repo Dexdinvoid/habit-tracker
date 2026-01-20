@@ -6,7 +6,7 @@ import styles from './ImageProofModal.module.css';
 
 interface ImageProofModalProps {
     habitName: string;
-    onSubmit: (imageUrl: string) => void;
+    onSubmit: (imageUrl: string, caption: string) => void;
     onClose: () => void;
 }
 
@@ -41,6 +41,7 @@ const DEMO_PROOFS = [
 
 export default function ImageProofModal({ habitName, onSubmit, onClose }: ImageProofModalProps) {
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
+    const [caption, setCaption] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -61,7 +62,7 @@ export default function ImageProofModal({ habitName, onSubmit, onClose }: ImageP
         setIsSubmitting(true);
         // Simulate upload delay
         await new Promise(resolve => setTimeout(resolve, 500));
-        onSubmit(selectedImage);
+        onSubmit(selectedImage, caption);
     };
 
     return (
@@ -101,6 +102,19 @@ export default function ImageProofModal({ habitName, onSubmit, onClose }: ImageP
                             >
                                 Change Image
                             </button>
+                            {/* Caption Input */}
+                            <div className={styles.captionSection}>
+                                <label className={styles.captionLabel}>Add a caption (optional)</label>
+                                <textarea
+                                    className={styles.captionInput}
+                                    placeholder="Share what you accomplished..."
+                                    value={caption}
+                                    onChange={(e) => setCaption(e.target.value)}
+                                    maxLength={280}
+                                    rows={3}
+                                />
+                                <span className={styles.charCount}>{caption.length}/280</span>
+                            </div>
                         </div>
                     ) : (
                         <>

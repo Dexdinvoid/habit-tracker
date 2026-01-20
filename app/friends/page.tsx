@@ -1,11 +1,15 @@
 'use client';
 
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useApp } from '@/lib/AppContext';
 import MainLayout from '@/components/layout/MainLayout';
 import LeagueBadge from '@/components/gamification/LeagueBadge';
+import FriendProfileModal from '@/components/social/FriendProfileModal';
+import InviteQRModal from '@/components/social/InviteQRModal';
+import QRScannerModal from '@/components/social/QRScannerModal';
+import { Friend } from '@/lib/types';
 import styles from './page.module.css';
 
 const SearchIcon = () => (
@@ -34,17 +38,103 @@ const QRIcon = () => (
     </svg>
 );
 
+const ScanIcon = () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M16 3h5v5M8 3H3v5M16 21h5v-5M8 21H3v-5M7 12h10" />
+    </svg>
+);
+
 export default function FriendsPage() {
     const router = useRouter();
-    const { user, friends } = useApp();
+    const { user, friends, isLoading } = useApp();
     const [searchQuery, setSearchQuery] = useState('');
     const [activeTab, setActiveTab] = useState<'friends' | 'leaderboard'>('friends');
+    const [selectedFriend, setSelectedFriend] = useState<Friend | null>(null);
+    const [toastMessage, setToastMessage] = useState<string | null>(null);
+    const [showQR, setShowQR] = useState(false);
+    const [showScanner, setShowScanner] = useState(false);
 
     React.useEffect(() => {
-        if (!user) {
+        if (!isLoading && !user) {
             router.push('/login');
         }
-    }, [user, router]);
+    }, [user, isLoading, router]);
+
+    const showToast = (message: string) => {
+        setToastMessage(message);
+        setTimeout(() => setToastMessage(null), 3000);
+    };
+
+    const handleInviteLink = () => {
+        if (!user) {
+            showToast('Please sign in to generate an invite link.');
+            return;
+        }
+
+        const inviteUrl = `${window.location.origin}/signup?ref=${user.id}`;
+
+        // Robust copy to clipboard
+        const textArea = document.createElement("textarea");
+        textArea.value = inviteUrl;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-9999px";
+        textArea.style.top = "-9999px";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+
+        try {
+            const successful = document.execCommand('copy');
+            if (successful) {
+                showToast('Invite link copied! Send it to your squad 🚀');
+            } else {
+                throw new Error('execCommand failed');
+            }
+        } catch (err) {
+            // Last ditch effort: navigator.clipboard
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(inviteUrl).then(() => {
+                    showToast('Invite link copied! Send it to your squad 🚀');
+                });
+            } else {
+                alert('Could not copy automatically. Please copy this link manually:\n\n' + inviteUrl);
+            }
+        } finally {
+            document.body.removeChild(textArea);
+        }
+    };
+
+    const handleScan = (scanResult: string) => {
+        setShowScanner(false);
+        try {
+            // Check if detected content is a valid link to our app
+            const url = new URL(scanResult);
+            if (url.origin === window.location.origin && url.pathname.includes('signup')) {
+                const ref = url.searchParams.get('ref');
+                if (ref) {
+                    showToast(`Found invite code: ${ref}`);
+                    // Here we would actually trigger a friend add action
+                    // addFriend(ref);
+                } else {
+                    showToast('Invalid invite link (no referral code)');
+                }
+            } else {
+                showToast('scanned data: ' + scanResult);
+            }
+        } catch (e) {
+            showToast('scanned data: ' + scanResult);
+        }
+    };
+
+    if (isLoading) {
+        return (
+            <MainLayout>
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
+                    <div className={styles.loadingSpinner} />
+                </div>
+            </MainLayout>
+        );
+    }
 
     if (!user) return null;
 
@@ -53,11 +143,32 @@ export default function FriendsPage() {
         friend.username.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    // Sort friends by points for leaderboard
     const leaderboard = [...friends].sort((a, b) => b.totalPoints - a.totalPoints);
 
     return (
         <MainLayout>
+            {toastMessage && (
+                <div className={styles.toast}>
+                    <span className={styles.toastIcon}>🔗</span>
+                    {toastMessage}
+                </div>
+            )}
+
+            <AnimatePresence>
+                {showQR && user && (
+                    <InviteQRModal
+                        inviteUrl={`${window.location.origin}/signup?ref=${user.id}`}
+                        onClose={() => setShowQR(false)}
+                    />
+                )}
+                {showScanner && (
+                    <QRScannerModal
+                        onScan={handleScan}
+                        onClose={() => setShowScanner(false)}
+                    />
+                )}
+            </AnimatePresence>
+
             <div className={styles.container}>
                 {/* Header */}
                 <div className={styles.header}>
@@ -70,6 +181,7 @@ export default function FriendsPage() {
                             className={styles.inviteButton}
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
+                            onClick={handleInviteLink}
                         >
                             <LinkIcon />
                             <span>Invite Link</span>
@@ -78,8 +190,18 @@ export default function FriendsPage() {
                             className={styles.qrButton}
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
+                            onClick={() => setShowQR(true)}
                         >
                             <QRIcon />
+                        </motion.button>
+                        <motion.button
+                            className={styles.qrButton}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => setShowScanner(true)}
+                            title="Scan QR Code"
+                        >
+                            <ScanIcon />
                         </motion.button>
                     </div>
                 </div>
@@ -127,6 +249,8 @@ export default function FriendsPage() {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: index * 0.05 }}
                                 whileHover={{ y: -2 }}
+                                onClick={() => setSelectedFriend(friend)}
+                                style={{ cursor: 'pointer' }}
                             >
                                 <img
                                     src={friend.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${friend.username}`}
@@ -160,6 +284,8 @@ export default function FriendsPage() {
                                 initial={{ opacity: 0, x: -20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: index * 0.05 }}
+                                onClick={() => setSelectedFriend(friend)}
+                                style={{ cursor: 'pointer' }}
                             >
                                 <span className={`${styles.rank} ${styles[`rank${index + 1}`]}`}>
                                     {index === 0 && '🥇'}
@@ -184,6 +310,16 @@ export default function FriendsPage() {
                         ))}
                     </motion.div>
                 )}
+
+                {/* Friend Profile Modal */}
+                <AnimatePresence>
+                    {selectedFriend && (
+                        <FriendProfileModal
+                            friend={selectedFriend}
+                            onClose={() => setSelectedFriend(null)}
+                        />
+                    )}
+                </AnimatePresence>
             </div>
         </MainLayout>
     );

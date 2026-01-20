@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useApp } from '@/lib/AppContext';
 import MainLayout from '@/components/layout/MainLayout';
 import HabitCard from '@/components/habits/HabitCard';
 import Heatmap from '@/components/habits/Heatmap';
+import ProgressLineChart from '@/components/habits/ProgressLineChart';
 import AddHabitModal from '@/components/habits/AddHabitModal';
 import ImageProofModal from '@/components/habits/ImageProofModal';
 import styles from './page.module.css';
@@ -20,16 +21,46 @@ const PlusIcon = () => (
 
 export default function TrackerPage() {
     const router = useRouter();
-    const { user, habits, completeHabit } = useApp();
+    const { user, habits, completeHabit, deleteHabit, isLoading } = useApp();
+    const [habitToDelete, setHabitToDelete] = useState<{ id: string; name: string } | null>(null);
+
     const [showAddModal, setShowAddModal] = useState(false);
     const [proofModal, setProofModal] = useState<{ habitId: string; habitName: string } | null>(null);
 
+    // Generate heatmap data from habit completions
+    const heatmapData = useMemo(() => {
+        const dateMap = new Map<string, number>();
+
+        habits.forEach(habit => {
+            habit.completions?.forEach(completion => {
+                const dateStr = new Date(completion.completedAt).toLocaleDateString('en-CA');
+                dateMap.set(dateStr, (dateMap.get(dateStr) || 0) + 1);
+            });
+        });
+
+        return Array.from(dateMap.entries()).map(([date, count]) => ({
+            date,
+            count,
+            level: Math.min(4, count) as 0 | 1 | 2 | 3 | 4
+        }));
+    }, [habits]);
+
     // Redirect if not logged in
     React.useEffect(() => {
-        if (!user) {
+        if (!isLoading && !user) {
             router.push('/login');
         }
-    }, [user, router]);
+    }, [user, isLoading, router]);
+
+    if (isLoading) {
+        return (
+            <MainLayout>
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
+                    <div className={styles.loadingSpinner} />
+                </div>
+            </MainLayout>
+        );
+    }
 
     if (!user) return null;
 
@@ -41,10 +72,17 @@ export default function TrackerPage() {
         setProofModal({ habitId, habitName });
     };
 
-    const handleProofSubmit = (imageUrl: string) => {
+    const handleProofSubmit = (imageUrl: string, caption: string) => {
         if (proofModal) {
-            completeHabit(proofModal.habitId, imageUrl);
+            completeHabit(proofModal.habitId, imageUrl, caption);
             setProofModal(null);
+        }
+    };
+
+    const confirmDelete = () => {
+        if (habitToDelete) {
+            deleteHabit(habitToDelete.id);
+            setHabitToDelete(null);
         }
     };
 
@@ -120,15 +158,26 @@ export default function TrackerPage() {
                     </div>
                 </motion.div>
 
+                {/* Line Chart Section */}
+                <motion.div
+                    className={styles.chartSection}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.15 }}
+                    style={{ marginBottom: 'var(--space-xl)' }}
+                >
+                    <ProgressLineChart />
+                </motion.div>
+
                 {/* Heatmap Section */}
                 <motion.div
                     className={styles.heatmapSection}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 }}
+                    transition={{ delay: 0.2 }}
                 >
                     <h2 className={styles.sectionTitle}>Activity Overview</h2>
-                    <Heatmap />
+                    <Heatmap data={heatmapData} />
                 </motion.div>
 
                 {/* Habits List */}
@@ -164,6 +213,7 @@ export default function TrackerPage() {
                                     <HabitCard
                                         habit={habit}
                                         onCheck={() => handleHabitCheck(habit.id, habit.name)}
+                                        onDelete={() => setHabitToDelete({ id: habit.id, name: habit.name })}
                                     />
                                 </motion.div>
                             ))}
@@ -187,7 +237,38 @@ export default function TrackerPage() {
                         />
                     )}
                 </AnimatePresence>
+
+                {/* Delete Confirmation Modal */}
+                <AnimatePresence>
+                    {habitToDelete && (
+                        <div className={styles.modalOverlay}>
+                            <motion.div
+                                className={styles.deleteModal}
+                                initial={{ scale: 0.9, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                exit={{ scale: 0.9, opacity: 0 }}
+                            >
+                                <h3>Delete Habit?</h3>
+                                <p>Are you sure you want to delete <strong>{habitToDelete.name}</strong>? This action cannot be undone.</p>
+                                <div className={styles.modalActions}>
+                                    <button
+                                        className={styles.cancelButton}
+                                        onClick={() => setHabitToDelete(null)}
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        className={styles.deleteConfirmButton}
+                                        onClick={confirmDelete}
+                                    >
+                                        Delete
+                                    </button>
+                                </div>
+                            </motion.div>
+                        </div>
+                    )}
+                </AnimatePresence>
             </div>
-        </MainLayout>
+        </MainLayout >
     );
 }

@@ -115,6 +115,7 @@ export interface FeedPost {
     habitName: string;
     habitIcon: string;
     proofImageUrl: string;
+    caption?: string;
     pointsEarned: number;
     createdAt: Date;
     likes: number;
@@ -225,5 +226,39 @@ export const NAV_ITEMS: NavItem[] = [
     { id: 'home', label: 'Home', href: '/', icon: 'home' },
     { id: 'tracker', label: 'Tracker', href: '/tracker', icon: 'check-circle' },
     { id: 'friends', label: 'Friends', href: '/friends', icon: 'users' },
+    { id: 'messages', label: 'Messages', href: '/messages', icon: 'message-square' },
     { id: 'challenges', label: 'Challenges', href: '/challenges', icon: 'trophy' },
 ];
+
+// Messaging
+export interface Message {
+    id: string;
+    senderId: string;
+    receiverId: string;
+    content: string;
+    isRead: boolean;
+    createdAt: Date;
+    sender?: {
+        username: string;
+        displayName: string;
+        avatar?: string;
+    };
+    receiver?: {
+        username: string;
+        displayName: string;
+        avatar?: string;
+    };
+}
+
+export interface Conversation {
+    partner: User;
+    lastMessage: Message;
+    unreadCount: number;
+}
+
+export interface UserAchievement {
+    id: string;
+    userId: string;
+    achievementId: string;
+    unlockedAt: Date;
+}

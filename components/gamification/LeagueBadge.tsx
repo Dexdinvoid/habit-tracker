@@ -19,7 +19,7 @@ const LEAGUE_CONFIG: Record<LeagueTier, { icon: string; color: string; glow: str
     silver: { icon: '🥈', color: '#c0c0c0', glow: 'rgba(192, 192, 192, 0.4)' },
     gold: { icon: '🥇', color: '#ffd700', glow: 'rgba(255, 215, 0, 0.4)' },
     diamond: { icon: '💎', color: '#b9f2ff', glow: 'rgba(185, 242, 255, 0.5)' },
-    platinum: { icon: '🔷', color: '#40e0d0', glow: 'rgba(64, 224, 208, 0.4)' },
+    platinum: { icon: '💠', color: '#40e0d0', glow: 'rgba(64, 224, 208, 0.4)' },
     ascendant: { icon: '⬆️', color: '#00ff88', glow: 'rgba(0, 255, 136, 0.4)' },
     immortal: { icon: '👑', color: '#ff2a6d', glow: 'rgba(255, 42, 109, 0.5)' },
     radiant: { icon: '✨', color: '#ffd700', glow: 'rgba(255, 215, 0, 0.6)' },

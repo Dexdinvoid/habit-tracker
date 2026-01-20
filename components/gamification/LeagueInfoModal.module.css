@@ -1,0 +1,159 @@
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: var(--space-md);
+}
+
+.modal {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    width: 100%;
+    max-width: 500px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+}
+
+.header {
+    padding: var(--space-lg);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-surface);
+}
+
+.header h2 {
+    margin: 0;
+    font-size: var(--text-xl);
+    color: var(--text-primary);
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    font-size: var(--text-2xl);
+    color: var(--text-secondary);
+    cursor: pointer;
+    line-height: 1;
+    padding: var(--space-xs);
+    border-radius: var(--radius-sm);
+    transition: color 0.2s;
+}
+
+.closeButton:hover {
+    color: var(--text-primary);
+    background: var(--bg-muted);
+}
+
+.content {
+    padding: var(--space-lg);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+}
+
+.section h3 {
+    font-size: var(--text-lg);
+    color: var(--text-secondary);
+    margin-bottom: var(--space-md);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: var(--text-sm);
+    font-weight: var(--font-bold);
+}
+
+.leagueList {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.leagueRow {
+    display: flex;
+    align-items: center;
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-md);
+    background: var(--bg-muted);
+    transition: all 0.2s;
+    border: 1px solid transparent;
+}
+
+.leagueRow.active {
+    background: rgba(var(--league-color), 0.1);
+    border-color: var(--league-color);
+    box-shadow: 0 0 10px var(--league-color);
+}
+
+.icon {
+    font-size: var(--text-xl);
+    margin-right: var(--space-md);
+    width: 24px;
+    text-align: center;
+}
+
+.name {
+    flex: 1;
+    font-weight: var(--font-medium);
+    color: var(--text-primary);
+}
+
+.range {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    font-family: monospace;
+}
+
+.pointGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-md);
+}
+
+.pointCard {
+    background: var(--bg-muted);
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.pointIcon {
+    font-size: var(--text-xl);
+}
+
+.pointInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.action {
+    font-size: var(--text-xs);
+    color: var(--text-secondary);
+}
+
+.points {
+    font-weight: var(--font-bold);
+    color: var(--accent-primary);
+    font-size: var(--text-lg);
+}
+
+@media (max-width: 480px) {
+    .pointGrid {
+        grid-template-columns: 1fr;
+    }
+}

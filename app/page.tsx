@@ -7,18 +7,32 @@ import { useApp } from '@/lib/AppContext';
 import MainLayout from '@/components/layout/MainLayout';
 import FeedCard from '@/components/social/FeedCard';
 import LeagueBadge from '@/components/gamification/LeagueBadge';
+import Link from 'next/link';
+import LeagueInfoModal from '@/components/gamification/LeagueInfoModal';
+import { AnimatePresence } from 'framer-motion';
 import styles from './page.module.css';
 
 export default function HomePage() {
   const router = useRouter();
-  const { user, userStats, feedPosts, habits } = useApp();
+  const { user, userStats, feedPosts, habits, isLoading } = useApp();
+  const [showLeagueModal, setShowLeagueModal] = React.useState(false);
 
   // Redirect to login if not logged in
   React.useEffect(() => {
-    if (!user) {
+    if (!isLoading && !user) {
       router.push('/login');
     }
-  }, [user, router]);
+  }, [user, isLoading, router]);
+
+  if (isLoading) {
+    return (
+      <MainLayout>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
+          <div className={styles.loadingSpinner} />
+        </div>
+      </MainLayout>
+    );
+  }
 
   if (!user) return null;
 
@@ -75,6 +89,8 @@ export default function HomePage() {
             <motion.div
               className={styles.statCard}
               whileHover={{ scale: 1.02, y: -2 }}
+              onClick={() => setShowLeagueModal(true)}
+              style={{ cursor: 'pointer' }}
             >
               <LeagueBadge
                 tier={userStats?.league || 'unranked'}
@@ -138,6 +154,15 @@ export default function HomePage() {
             ))}
           </div>
         </section>
+
+        <AnimatePresence>
+          {showLeagueModal && (
+            <LeagueInfoModal
+              currentLeague={userStats?.league || 'unranked'}
+              onClose={() => setShowLeagueModal(false)}
+            />
+          )}
+        </AnimatePresence>
       </div>
     </MainLayout>
   );
