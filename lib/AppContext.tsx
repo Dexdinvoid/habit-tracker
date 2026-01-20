@@ -198,7 +198,7 @@ export function AppProvider({ children }: AppProviderProps) {
                     achievements: []
                 };
 
-                const user: User = {
+                const updatedUser: User = {
                     id: session.user.id,
                     email: session.user.email!,
                     username: session.user.user_metadata.full_name || 'User',
@@ -217,7 +217,7 @@ export function AppProvider({ children }: AppProviderProps) {
 
                 setState(prev => ({
                     ...prev,
-                    user,
+                    user: updatedUser,
                     userStats,
                     habits: finalHabits,
                     feedPosts: finalFeedPosts, // Will fix this variable name in next step if needed
