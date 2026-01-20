@@ -84,7 +84,7 @@ export default function FriendsPage() {
             return;
         }
 
-        const inviteUrl = `${origin}/login?ref=${user.id}`;
+        const inviteUrl = `${origin}/signup?ref=${user.id}`;
 
         // Robust copy to clipboard
         const textArea = document.createElement("textarea");
@@ -170,7 +170,7 @@ export default function FriendsPage() {
             <AnimatePresence>
                 {showQR && user && (
                     <InviteQRModal
-                        inviteUrl={`${origin}/login?ref=${user.id}`}
+                        inviteUrl={`${origin}/signup?ref=${user.id}`}
                         onClose={() => setShowQR(false)}
                     />
                 )}
