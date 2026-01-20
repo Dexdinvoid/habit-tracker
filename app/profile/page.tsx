@@ -108,6 +108,10 @@ export default function ProfilePage() {
                             <span className={styles.statValue}>{followingCount}</span>
                             <span className={styles.statLabel}>Following</span>
                         </div>
+                        <div className={styles.stat}>
+                            <span className={styles.statValue}>{userStats.referralsCount || 0}</span>
+                            <span className={styles.statLabel}>Friends Invited</span>
+                        </div>
                     </div>
                 </motion.div>
 

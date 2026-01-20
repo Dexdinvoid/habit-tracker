@@ -168,11 +168,19 @@ export function AppProvider({ children }: AppProviderProps) {
 
                 // TODO: Fetch real stats from DB if available.
                 // Attempt to fetch profile stats
+                // Attempt to fetch profile stats
                 const { data: profileData } = await supabase
                     .from('profiles')
-                    .select('points, current_streak, highest_streak')
+                    .select('points, current_streak, highest_streak, invite_code')
                     .eq('id', session.user.id)
                     .single();
+
+                // Fetch referral stats
+                const { count: referralsCount } = await supabase
+                    .from('referrals')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('inviter_id', session.user.id)
+                    .eq('status', 'rewarded');
 
                 const totalPoints = profileData?.points || 0;
                 const { tier, rank } = calculateLeague(totalPoints);
@@ -183,9 +191,23 @@ export function AppProvider({ children }: AppProviderProps) {
                     longestStreak: profileData?.highest_streak || 0,
                     habitsCompleted: 0, // Need aggregation query for accurate count
                     weeklyPoints: 0,
+                    referralsCount: referralsCount || 0,
+                    pointsFromReferrals: (referralsCount || 0) * 50,
                     league: tier,
                     leagueRank: rank,
                     achievements: []
+                };
+
+                const user: User = {
+                    id: session.user.id,
+                    email: session.user.email!,
+                    username: session.user.user_metadata.full_name || 'User',
+                    displayName: session.user.user_metadata.full_name || 'User',
+                    avatar: session.user.user_metadata.avatar_url,
+                    theme: 'cyberpunk',
+                    inviteCode: profileData?.invite_code,
+                    createdAt: new Date(session.user.created_at),
+                    updatedAt: new Date(session.user.last_sign_in_at || session.user.created_at)
                 };
 
                 // We handle realPosts logic above, but let's just initialize empty if simpler.

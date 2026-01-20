@@ -105,3 +105,33 @@
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
+
+.downloadButton {
+    width: 100%;
+    padding: var(--space-md);
+    background: var(--bg-surface);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: var(--space-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+}
+
+.downloadButton:hover {
+    background: var(--bg-muted);
+    border-color: var(--accent-primary);
+}
+
+.copyHint {
+    color: var(--text-muted);
+    font-size: var(--text-xs);
+    margin-left: var(--space-xs);
+    font-style: italic;
+}

@@ -14,6 +14,7 @@ export interface User {
     avatar?: string;
     bio?: string;
     theme: ThemeName;
+    inviteCode?: string;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -26,6 +27,8 @@ export interface UserStats {
     league: LeagueTier;
     leagueRank: 1 | 2 | 3;  // 1-3 sub-rank within tier
     weeklyPoints: number;
+    referralsCount?: number;
+    pointsFromReferrals?: number;
     achievements: Achievement[];
 }
 
