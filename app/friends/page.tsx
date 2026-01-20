@@ -53,13 +53,19 @@ export default function FriendsPage() {
     const [toastMessage, setToastMessage] = useState<string | null>(null);
     const [showQR, setShowQR] = useState(false);
     const [showScanner, setShowScanner] = useState(false);
-    const [origin, setOrigin] = useState('');
 
-    React.useEffect(() => {
-        if (typeof window !== 'undefined') {
-            setOrigin(process.env.NEXT_PUBLIC_APP_URL || window.location.origin);
+    // Get origin safely - prioritize env var, then window.location
+    const getOrigin = () => {
+        if (process.env.NEXT_PUBLIC_APP_URL) {
+            return process.env.NEXT_PUBLIC_APP_URL;
         }
-    }, []);
+        if (typeof window !== 'undefined') {
+            return window.location.origin;
+        }
+        return 'https://consistent.vercel.app'; // Hardcoded fallback for your app
+    };
+
+    const origin = getOrigin();
 
     React.useEffect(() => {
         if (!isLoading && !user) {
@@ -78,7 +84,7 @@ export default function FriendsPage() {
             return;
         }
 
-        const inviteUrl = `${origin}/signup?ref=${user.id}`;
+        const inviteUrl = `${origin}/login?ref=${user.id}`;
 
         // Robust copy to clipboard
         const textArea = document.createElement("textarea");
@@ -164,7 +170,7 @@ export default function FriendsPage() {
             <AnimatePresence>
                 {showQR && user && (
                     <InviteQRModal
-                        inviteUrl={`${origin}/signup?ref=${user.id}`}
+                        inviteUrl={`${origin}/login?ref=${user.id}`}
                         onClose={() => setShowQR(false)}
                     />
                 )}
