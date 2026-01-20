@@ -53,6 +53,13 @@ export default function FriendsPage() {
     const [toastMessage, setToastMessage] = useState<string | null>(null);
     const [showQR, setShowQR] = useState(false);
     const [showScanner, setShowScanner] = useState(false);
+    const [origin, setOrigin] = useState('');
+
+    React.useEffect(() => {
+        if (typeof window !== 'undefined') {
+            setOrigin(process.env.NEXT_PUBLIC_APP_URL || window.location.origin);
+        }
+    }, []);
 
     React.useEffect(() => {
         if (!isLoading && !user) {
@@ -71,7 +78,7 @@ export default function FriendsPage() {
             return;
         }
 
-        const inviteUrl = `${window.location.origin}/signup?ref=${user.id}`;
+        const inviteUrl = `${origin}/signup?ref=${user.id}`;
 
         // Robust copy to clipboard
         const textArea = document.createElement("textarea");
@@ -97,7 +104,7 @@ export default function FriendsPage() {
                     showToast('Invite link copied! Send it to your squad 🚀');
                 });
             } else {
-                alert('Could not copy automatically. Please copy this link manually:\n\n' + inviteUrl);
+                showToast('Copy manually: ' + inviteUrl);
             }
         } finally {
             document.body.removeChild(textArea);
@@ -109,7 +116,7 @@ export default function FriendsPage() {
         try {
             // Check if detected content is a valid link to our app
             const url = new URL(scanResult);
-            if (url.origin === window.location.origin && url.pathname.includes('signup')) {
+            if ((url.origin === origin || url.origin === window.location.origin) && url.pathname.includes('signup')) {
                 const ref = url.searchParams.get('ref');
                 if (ref) {
                     showToast(`Found invite code: ${ref}`);
@@ -157,7 +164,7 @@ export default function FriendsPage() {
             <AnimatePresence>
                 {showQR && user && (
                     <InviteQRModal
-                        inviteUrl={`${window.location.origin}/signup?ref=${user.id}`}
+                        inviteUrl={`${origin}/signup?ref=${user.id}`}
                         onClose={() => setShowQR(false)}
                     />
                 )}
