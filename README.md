@@ -29,8 +29,32 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
+## Environment Variables
+
+Create a `.env.local` file in the root directory with the following variables (see `.env.example` for template):
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
+NEXT_PUBLIC_APP_URL=https://your-domain.vercel.app  # Optional
+```
+
+**For local development:**
+Copy `.env.example` to `.env.local` and fill in your actual values.
+
+**For Vercel deployment:**
+1. Go to your Vercel project Dashboard
+2. Navigate to Settings → Environment Variables
+3. Add the three variables above
+4. Redeploy the project
+
 ## Deploy on Vercel
 
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+**Critical for this app:**
+- Set environment variables **before** deployment (see Environment Variables section above)
+- The `/invite` route requires `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` to be set
+- Without these, you'll get a 404 error on the `/invite` page
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

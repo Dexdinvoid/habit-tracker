@@ -39,6 +39,7 @@ function InviteContent() {
                 .single();
 
             if (fetchError || !data) {
+                if (fetchError) console.error('Error fetching inviter profile:', fetchError);
                 setError('Inviter not found');
                 setIsLoading(false);
                 return;
@@ -177,7 +178,17 @@ function InviteContent() {
 
 export default function InvitePage() {
     return (
-        <Suspense fallback={<div className={styles.container}><div className={styles.loadingSpinner} /></div>}>
+        <Suspense fallback={
+            <div className={styles.container}>
+                <div className={styles.background}>
+                    <div className={styles.orb1} />
+                    <div className={styles.orb2} />
+                </div>
+                <div className={styles.card}>
+                    <div className={styles.loadingSpinner} />
+                </div>
+            </div>
+        }>
             <InviteContent />
         </Suspense>
     );

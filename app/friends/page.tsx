@@ -68,15 +68,20 @@ export default function FriendsPage() {
     const [isSearching, setIsSearching] = useState(false);
     const [showShareMenu, setShowShareMenu] = useState(false);
 
-    // Get origin safely - prioritize env var, then window.location
+    // Get origin safely: prefer explicit NEXT_PUBLIC_APP_URL, then Vercel runtime var,
+    // then `window.location.origin` in browser. This prevents incorrect origins
+    // when code runs during build or on serverless functions.
     const getOrigin = () => {
         if (process.env.NEXT_PUBLIC_APP_URL) {
             return process.env.NEXT_PUBLIC_APP_URL;
         }
+        if (process.env.NEXT_PUBLIC_VERCEL_URL) {
+            return `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`;
+        }
         if (typeof window !== 'undefined') {
             return window.location.origin;
         }
-        return 'https://consistent.vercel.app'; // Hardcoded fallback for your app
+        return 'https://consistent.vercel.app'; // Hardcoded fallback for local/dev
     };
 
     const origin = getOrigin();
@@ -118,7 +123,7 @@ export default function FriendsPage() {
             return;
         }
 
-        const inviteUrl = `${origin}/invite?ref=${user.id}`;
+        const inviteUrl = `${origin}/invite?ref=${encodeURIComponent(user.id)}`;
 
         // Robust copy to clipboard
         const textArea = document.createElement("textarea");
@@ -203,7 +208,7 @@ export default function FriendsPage() {
             <AnimatePresence>
                 {showQR && user && (
                     <InviteQRModal
-                        inviteUrl={`${origin}/invite?ref=${user.id}`}
+                        inviteUrl={`${origin}/invite?ref=${encodeURIComponent(user.id)}`}
                         onClose={() => setShowQR(false)}
                     />
                 )}
@@ -215,7 +220,7 @@ export default function FriendsPage() {
                 )}
                 {showShareMenu && user && (
                     <ShareModal
-                        inviteUrl={`${origin}/invite?ref=${user.id}`}
+                        inviteUrl={`${origin}/invite?ref=${encodeURIComponent(user.id)}`}
                         onClose={() => setShowShareMenu(false)}
                     />
                 )}
