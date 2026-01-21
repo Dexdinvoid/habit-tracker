@@ -106,6 +106,17 @@
     letter-spacing: 0.5px;
 }
 
+.warning {
+    margin-top: var(--space-md);
+    padding: var(--space-sm);
+    background: rgba(255, 193, 7, 0.1);
+    border: 1px solid rgba(255, 193, 7, 0.3);
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    color: #ffc107;
+    text-align: left;
+}
+
 .downloadButton {
     width: 100%;
     padding: var(--space-md);

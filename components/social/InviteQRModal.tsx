@@ -62,6 +62,12 @@ export default function InviteQRModal({ inviteUrl, onClose }: InviteQRModalProps
                         {inviteUrl}
                     </p>
                     <span className={styles.hint}>Tap link to copy</span>
+                    {inviteUrl.includes('localhost') && (
+                        <p className={styles.warning}>
+                            ⚠️ <strong>Localhost detected:</strong> This QR code may not work on other devices.
+                            Deploy your app or use your local IP to test on mobile.
+                        </p>
+                    )}
                 </div>
             </motion.div>
         </motion.div>,
