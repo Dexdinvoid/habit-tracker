@@ -50,6 +50,43 @@
     margin-bottom: var(--space-xs);
 }
 
+.actions {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-xl);
+}
+
+.messageButton, .followButton {
+    padding: var(--space-sm) var(--space-lg);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.messageButton {
+    background: var(--accent-primary);
+    color: white;
+    border: none;
+}
+
+.messageButton:hover {
+    background: var(--accent-secondary);
+}
+
+.followButton {
+    background: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--glass-border);
+}
+
+.followButton:hover {
+    background: var(--glass-bg);
+    border-color: var(--text-muted);
+}
+
 .username {
     font-size: var(--text-base);
     color: var(--text-muted);

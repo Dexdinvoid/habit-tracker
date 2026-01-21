@@ -116,8 +116,15 @@ export default function FriendProfileModal({ friend, onClose }: FriendProfileMod
                 </div>
 
                 <div className={styles.cardFooter}>
+                    <button
+                        className={styles.actionButton}
+                        onClick={() => router.push(`/messages?partnerId=${friend.id}`)}
+                        style={{ background: 'var(--accent-primary)', color: 'white' }}
+                    >
+                        <span>💬</span> Message
+                    </button>
                     <button className={styles.actionButton} onClick={() => alert('Challenge feature coming soon!')}>
-                        <span>⚔️</span> Challenge Friend
+                        <span>⚔️</span> Challenge
                     </button>
                 </div>
             </motion.div>

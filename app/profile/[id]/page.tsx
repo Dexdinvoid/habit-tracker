@@ -79,6 +79,21 @@ export default function UserProfilePage() {
                         <p className={styles.username}>@{user.username}</p>
                     </div>
 
+                    <div className={styles.actions}>
+                        <button
+                            className={styles.messageButton}
+                            onClick={() => router.push(`/messages?partnerId=${user.id}`)}
+                        >
+                            💬 Send Message
+                        </button>
+                        <button
+                            className={styles.followButton}
+                            onClick={() => alert('Follow feature coming soon!')}
+                        >
+                            👤 Follow User
+                        </button>
+                    </div>
+
                     <div className={styles.statsGrid}>
                         <div className={styles.stat}>
                             <span className={styles.statValue}>{user.totalPoints.toLocaleString()}</span>
