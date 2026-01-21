@@ -70,13 +70,18 @@ export default function FriendsPage() {
 
     // Get origin safely - prioritize env var, then window.location
     const getOrigin = () => {
+        // If we are on the client, window.location.origin is the most reliable
+        if (typeof window !== 'undefined' && window.location.origin) {
+            // Filter out common local issues or misconfigurations if needed,
+            // but generally we want to use where the user is currently browsing
+            return window.location.origin;
+        }
+
+        // Fallback for SSR or if window is not available
         if (process.env.NEXT_PUBLIC_APP_URL) {
             return process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, '');
         }
-        if (typeof window !== 'undefined') {
-            return window.location.origin;
-        }
-        // Fallback for SSR
+
         return '';
     };
 
