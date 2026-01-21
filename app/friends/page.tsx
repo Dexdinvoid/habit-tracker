@@ -59,7 +59,8 @@ export default function FriendsPage() {
     const router = useRouter();
     const { user, friends, isLoading, searchUsers } = useApp();
     const [searchQuery, setSearchQuery] = useState('');
-    const [activeTab, setActiveTab] = useState<'friends' | 'leaderboard'>('friends');
+    const [activeTab, setActiveTab] = useState<'friends' | 'leaderboard' | 'discover'>('friends');
+    const [sortBy, setSortBy] = useState<'points' | 'streak' | 'name'>('points');
     const [selectedFriend, setSelectedFriend] = useState<Friend | null>(null);
     const [toastMessage, setToastMessage] = useState<string | null>(null);
     const [showQR, setShowQR] = useState(false);
@@ -284,12 +285,42 @@ export default function FriendsPage() {
                         Friends ({friends.length})
                     </button>
                     <button
+                        className={`${styles.tab} ${activeTab === 'discover' ? styles.active : ''}`}
+                        onClick={() => setActiveTab('discover')}
+                    >
+                        Discover
+                    </button>
+                    <button
                         className={`${styles.tab} ${activeTab === 'leaderboard' ? styles.active : ''}`}
                         onClick={() => setActiveTab('leaderboard')}
                     >
                         Leaderboard
                     </button>
                 </div>
+
+                {/* Sort Controls (Show on discover/leaderboard) */}
+                {(activeTab === 'discover' || activeTab === 'leaderboard') && (
+                    <div className={styles.sortControls}>
+                        <button
+                            className={`${styles.sortBtn} ${sortBy === 'points' ? styles.active : ''}`}
+                            onClick={() => setSortBy('points')}
+                        >
+                            💎 Points
+                        </button>
+                        <button
+                            className={`${styles.sortBtn} ${sortBy === 'streak' ? styles.active : ''}`}
+                            onClick={() => setSortBy('streak')}
+                        >
+                            🔥 Streak
+                        </button>
+                        <button
+                            className={`${styles.sortBtn} ${sortBy === 'name' ? styles.active : ''}`}
+                            onClick={() => setSortBy('name')}
+                        >
+                            A-Z Name
+                        </button>
+                    </div>
+                )}
 
                 {/* Content */}
                 {activeTab === 'friends' ? (
@@ -298,35 +329,94 @@ export default function FriendsPage() {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                     >
-                        {filteredFriends.map((friend, index) => (
-                            <motion.div
-                                key={friend.id}
-                                className={styles.friendCard}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: index * 0.05 }}
-                                whileHover={{ y: -2 }}
-                                onClick={() => setSelectedFriend(friend)}
-                                style={{ cursor: 'pointer' }}
-                            >
-                                <img
-                                    src={friend.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${friend.username}`}
-                                    alt={friend.displayName}
-                                    className={styles.friendAvatar}
-                                />
-                                <div className={styles.friendInfo}>
-                                    <span className={styles.friendName}>{friend.displayName}</span>
-                                    <span className={styles.friendUsername}>@{friend.username}</span>
-                                </div>
-                                <div className={styles.friendStats}>
-                                    <LeagueBadge tier={friend.league} rank={friend.leagueRank as 1 | 2 | 3} size="sm" />
-                                    <div className={styles.statPill}>
-                                        <span>🔥 {friend.currentStreak}</span>
+                        {filteredFriends.length === 0 ? (
+                            <div style={{ textAlign: 'center', padding: '40px 20px', color: '#888' }}>
+                                <p>📭 No friends yet</p>
+                                <p style={{ fontSize: '14px', marginTop: '8px' }}>Click "Discover" to find and add friends!</p>
+                            </div>
+                        ) : (
+                            filteredFriends.map((friend, index) => (
+                                <motion.div
+                                    key={friend.id}
+                                    className={styles.friendCard}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: index * 0.05 }}
+                                    whileHover={{ y: -2 }}
+                                    onClick={() => setSelectedFriend(friend)}
+                                    style={{ cursor: 'pointer' }}
+                                >
+                                    <img
+                                        src={friend.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${friend.username}`}
+                                        alt={friend.displayName}
+                                        className={styles.friendAvatar}
+                                    />
+                                    <div className={styles.friendInfo}>
+                                        <span className={styles.friendName}>{friend.displayName}</span>
+                                        <span className={styles.friendUsername}>@{friend.username}</span>
                                     </div>
-                                </div>
-                                <span className={styles.friendPoints}>{friend.totalPoints.toLocaleString()} pts</span>
-                            </motion.div>
-                        ))}
+                                    <div className={styles.friendStats}>
+                                        <LeagueBadge tier={friend.league} rank={friend.leagueRank as 1 | 2 | 3} size="sm" />
+                                        <div className={styles.statPill}>
+                                            <span>🔥 {friend.currentStreak}</span>
+                                        </div>
+                                    </div>
+                                    <span className={styles.friendPoints}>{friend.totalPoints.toLocaleString()} pts</span>
+                                </motion.div>
+                            ))
+                        )}
+                    </motion.div>
+                ) : activeTab === 'discover' ? (
+                    <motion.div
+                        className={styles.friendsList}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                    >
+                        {isSearching ? (
+                            <div style={{ textAlign: 'center', padding: '40px' }}>
+                                <div className={styles.loadingSpinner} />
+                            </div>
+                        ) : searchResults.length === 0 ? (
+                            <div style={{ textAlign: 'center', padding: '40px 20px', color: '#888' }}>
+                                <p>🔍 {searchQuery ? 'No users found' : 'Search to discover new users'}</p>
+                            </div>
+                        ) : (
+                            searchResults
+                                .sort((a, b) => {
+                                    if (sortBy === 'points') return b.totalPoints - a.totalPoints;
+                                    if (sortBy === 'streak') return b.currentStreak - a.currentStreak;
+                                    return a.displayName.localeCompare(b.displayName);
+                                })
+                                .map((friend, index) => (
+                                    <motion.div
+                                        key={friend.id}
+                                        className={styles.friendCard}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: index * 0.05 }}
+                                        whileHover={{ y: -2 }}
+                                        onClick={() => setSelectedFriend(friend)}
+                                        style={{ cursor: 'pointer' }}
+                                    >
+                                        <img
+                                            src={friend.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${friend.username}`}
+                                            alt={friend.displayName}
+                                            className={styles.friendAvatar}
+                                        />
+                                        <div className={styles.friendInfo}>
+                                            <span className={styles.friendName}>{friend.displayName}</span>
+                                            <span className={styles.friendUsername}>@{friend.username}</span>
+                                        </div>
+                                        <div className={styles.friendStats}>
+                                            <LeagueBadge tier={friend.league} rank={friend.leagueRank as 1 | 2 | 3} size="sm" />
+                                            <div className={styles.statPill}>
+                                                <span>🔥 {friend.currentStreak}</span>
+                                            </div>
+                                        </div>
+                                        <span className={styles.friendPoints}>{friend.totalPoints.toLocaleString()} pts</span>
+                                    </motion.div>
+                                ))
+                        )}
                     </motion.div>
                 ) : (
                     <motion.div
@@ -334,37 +424,43 @@ export default function FriendsPage() {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                     >
-                        {leaderboard.map((friend, index) => (
-                            <motion.div
-                                key={friend.id}
-                                className={`${styles.leaderboardRow} ${index < 3 ? styles.topThree : ''}`}
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: index * 0.05 }}
-                                onClick={() => setSelectedFriend(friend)}
-                                style={{ cursor: 'pointer' }}
-                            >
-                                <span className={`${styles.rank} ${styles[`rank${index + 1}`]}`}>
-                                    {index === 0 && '🥇'}
-                                    {index === 1 && '🥈'}
-                                    {index === 2 && '🥉'}
-                                    {index > 2 && `#${index + 1}`}
-                                </span>
-                                <img
-                                    src={friend.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${friend.username}`}
-                                    alt={friend.displayName}
-                                    className={styles.leaderboardAvatar}
-                                />
-                                <div className={styles.leaderboardInfo}>
-                                    <span className={styles.leaderboardName}>{friend.displayName}</span>
-                                    <span className={styles.leaderboardStreak}>🔥 {friend.currentStreak} day streak</span>
-                                </div>
-                                <div className={styles.leaderboardPoints}>
-                                    <span className={styles.pointsValue}>{friend.totalPoints.toLocaleString()}</span>
-                                    <span className={styles.pointsLabel}>points</span>
-                                </div>
-                            </motion.div>
-                        ))}
+                        {leaderboard
+                            .sort((a, b) => {
+                                if (sortBy === 'streak') return b.currentStreak - a.currentStreak;
+                                if (sortBy === 'name') return a.displayName.localeCompare(b.displayName);
+                                return b.totalPoints - a.totalPoints;
+                            })
+                            .map((friend, index) => (
+                                <motion.div
+                                    key={friend.id}
+                                    className={`${styles.leaderboardRow} ${index < 3 ? styles.topThree : ''}`}
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: index * 0.05 }}
+                                    onClick={() => setSelectedFriend(friend)}
+                                    style={{ cursor: 'pointer' }}
+                                >
+                                    <span className={`${styles.rank} ${styles[`rank${index + 1}`]}`}>
+                                        {index === 0 && '🥇'}
+                                        {index === 1 && '🥈'}
+                                        {index === 2 && '🥉'}
+                                        {index > 2 && `#${index + 1}`}
+                                    </span>
+                                    <img
+                                        src={friend.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${friend.username}`}
+                                        alt={friend.displayName}
+                                        className={styles.leaderboardAvatar}
+                                    />
+                                    <div className={styles.leaderboardInfo}>
+                                        <span className={styles.leaderboardName}>{friend.displayName}</span>
+                                        <span className={styles.leaderboardStreak}>🔥 {friend.currentStreak} day streak</span>
+                                    </div>
+                                    <div className={styles.leaderboardPoints}>
+                                        <span className={styles.pointsValue}>{friend.totalPoints.toLocaleString()}</span>
+                                        <span className={styles.pointsLabel}>points</span>
+                                    </div>
+                                </motion.div>
+                            ))}
                     </motion.div>
                 )}
 
