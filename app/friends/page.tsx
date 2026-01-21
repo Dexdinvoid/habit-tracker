@@ -71,12 +71,13 @@ export default function FriendsPage() {
     // Get origin safely - prioritize env var, then window.location
     const getOrigin = () => {
         if (process.env.NEXT_PUBLIC_APP_URL) {
-            return process.env.NEXT_PUBLIC_APP_URL;
+            return process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, '');
         }
         if (typeof window !== 'undefined') {
             return window.location.origin;
         }
-        return 'https://consistent.vercel.app'; // Hardcoded fallback for your app
+        // Fallback for SSR
+        return '';
     };
 
     const origin = getOrigin();
@@ -156,20 +157,22 @@ export default function FriendsPage() {
         try {
             // Check if detected content is a valid link to our app
             const url = new URL(scanResult);
-            if ((url.origin === origin || url.origin === window.location.origin) && url.pathname.includes('signup')) {
+            const isOurApp = url.origin === origin || url.origin === window.location.origin || url.hostname.includes('vercel.app');
+
+            if (isOurApp && (url.pathname.includes('invite') || url.pathname.includes('signup'))) {
                 const ref = url.searchParams.get('ref');
                 if (ref) {
                     showToast(`Found invite code: ${ref}`);
-                    // Here we would actually trigger a friend add action
-                    // addFriend(ref);
+                    // In a real app, we'd call an API to add the friend
+                    // For now we just show the success
                 } else {
                     showToast('Invalid invite link (no referral code)');
                 }
             } else {
-                showToast('scanned data: ' + scanResult);
+                showToast('Scanned: ' + scanResult);
             }
         } catch (e) {
-            showToast('scanned data: ' + scanResult);
+            showToast('Scanned: ' + scanResult);
         }
     };
 
