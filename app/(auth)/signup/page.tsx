@@ -26,7 +26,7 @@ function SignupForm() {
         setError('');
 
         try {
-            const { error } = await supabase.auth.signUp({
+            const { data, error } = await supabase.auth.signUp({
                 email,
                 password,
                 options: {
@@ -39,7 +39,29 @@ function SignupForm() {
 
             if (error) throw error;
 
-            // Ideally show "Check email" message, but for MVP assuming auto-confirm or just redirect
+            // Create profile for new user
+            if (data.user) {
+                const username = fullName?.split(' ')[0]?.toLowerCase() || email.split('@')[0];
+                const { error: profileError } = await supabase
+                    .from('profiles')
+                    .insert({
+                        id: data.user.id,
+                        username: username,
+                        display_name: fullName,
+                        avatar_url: null,
+                        points: 0,
+                        current_streak: 0,
+                        highest_streak: 0,
+                        created_at: new Date().toISOString(),
+                    });
+
+                if (profileError) {
+                    console.error('Profile creation error:', profileError);
+                    // Don't fail signup if profile creation fails
+                }
+            }
+
+            // Redirect to home
             router.push('/');
         } catch (err: any) {
             setError(err.message || 'Failed to sign up');

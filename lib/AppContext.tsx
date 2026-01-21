@@ -793,29 +793,44 @@ export function AppProvider({ children }: AppProviderProps) {
     const searchUsers = async (query: string): Promise<Friend[]> => {
         if (!query.trim()) return [];
 
-        const { data, error } = await supabase
-            .from('profiles')
-            .select('id, username, display_name, avatar_url, points, current_streak')
-            .or(`username.ilike.%${query}%,display_name.ilike.%${query}%`)
-            .limit(20);
+        try {
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('id, username, display_name, avatar_url, points, current_streak')
+                .or(`username.ilike.%${query}%,display_name.ilike.%${query}%`)
+                .limit(20);
 
-        if (error || !data) return [];
+            if (error) {
+                console.error('Search users error:', error);
+                return [];
+            }
 
-        return data.map((profile: any) => {
-            const points = profile.points || 0;
-            const { tier } = calculateLeague(points);
+            if (!data) {
+                console.log('No search results found for:', query);
+                return [];
+            }
 
-            return {
-                id: profile.id,
-                username: profile.username,
-                displayName: profile.display_name || profile.username,
-                avatar: profile.avatar_url,
-                totalPoints: points,
-                currentStreak: profile.current_streak || 0,
-                league: tier,
-                leagueRank: 1, // Default rank
-            };
-        });
+            console.log(`Found ${data.length} users matching "${query}"`);
+
+            return data.map((profile: any) => {
+                const points = profile.points || 0;
+                const { tier } = calculateLeague(points);
+
+                return {
+                    id: profile.id,
+                    username: profile.username,
+                    displayName: profile.display_name || profile.username,
+                    avatar: profile.avatar_url,
+                    totalPoints: points,
+                    currentStreak: profile.current_streak || 0,
+                    league: tier,
+                    leagueRank: 1, // Default rank
+                };
+            });
+        } catch (err) {
+            console.error('Search users exception:', err);
+            return [];
+        }
     };
 
     return (
