@@ -29,6 +29,12 @@
     border-radius: 50%;
     padding: 2px;
     background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    transition: all 0.2s ease;
+}
+
+.avatarWrapper:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .avatar {
@@ -42,17 +48,28 @@
 .userInfo {
     display: flex;
     flex-direction: column;
+    transition: all 0.2s ease;
+}
+
+.userInfo:hover .displayName {
+    color: var(--accent-primary);
 }
 
 .displayName {
     font-weight: 600;
     font-size: 0.95rem;
     color: var(--text-primary);
+    transition: color 0.2s ease;
 }
 
 .username {
     font-size: 0.8rem;
     color: var(--text-secondary);
+    transition: color 0.2s ease;
+}
+
+.userInfo:hover .username {
+    color: var(--accent-primary);
 }
 
 .time {

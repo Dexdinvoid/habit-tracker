@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 import { useApp } from '@/lib/AppContext';
 import { FeedPost } from '@/lib/types';
 import styles from './FeedCard.module.css';
@@ -33,12 +34,17 @@ const CommentIcon = () => (
 );
 
 export default function FeedCard({ post }: FeedCardProps) {
+    const router = useRouter();
     const [comments, setComments] = useState<any[]>([]);
     const [isLoadingComments, setIsLoadingComments] = useState(false);
     const [showComments, setShowComments] = useState(false);
     const [isLiking, setIsLiking] = useState(false);
     const [newComment, setNewComment] = useState('');
     const { user, likePost, addComment, fetchComments } = useApp();
+
+    const handleAvatarClick = () => {
+        router.push(`/profile/${post.userId}`);
+    };
 
     const handleLike = async () => {
         if (isLiking) return;
@@ -86,14 +92,14 @@ export default function FeedCard({ post }: FeedCardProps) {
             {/* Header */}
             <div className={styles.header}>
                 <div className={styles.user}>
-                    <div className={styles.avatarWrapper}>
+                    <div className={styles.avatarWrapper} onClick={handleAvatarClick} style={{ cursor: 'pointer' }}>
                         <img
                             src={post.user.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${post.user.username}`}
                             alt={post.user.displayName}
                             className={styles.avatar}
                         />
                     </div>
-                    <div className={styles.userInfo}>
+                    <div className={styles.userInfo} onClick={handleAvatarClick} style={{ cursor: 'pointer' }}>
                         <span className={styles.displayName}>{post.user.displayName}</span>
                         <span className={styles.username}>@{post.user.username}</span>
                     </div>
